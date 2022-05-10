@@ -1,20 +1,33 @@
-<!-- Через 10 секунд после появления сообщения об отправке или ошибке — отправляемся на сайт Кода :) -->
-<meta http-equiv='refresh' content='10; url=http://thecode.local/'>
-<meta charset="UTF-8" />
-<!-- Начался блок PHP -->
 <?php
-// Получаем значения переменных из пришедших данных
+    // Получение данных с формы:
+    
+    $email = htmlspecialchars($_POST['email']);
+    $message = htmlspecialchars($_POST['text']);
 
-$email = $_POST['email'];
+    // Параметры для функции mail:
+    $source = getenv('HTTP_REFERER');
+    $subject = 'Тема письма клиенту';
+    $message = "Текст письма:
+        <br><br>
+        
+        E-mail: $email<br>
+        Телефон: $message<br>
+    ";
+    $headers = "From: $email\r\nReply-To: $email\r\nContent-type: text/html; charset=utf-8\r\n";
 
-$message = $_POST['message'];
-// Формируем сообщение для отправки, в нём мы соберём всё, что ввели в форме
-$mes = "Имя: $name \nE-mail: $email \nТема: $header \nТекст: $message";
-// Пытаемся отправить письмо по заданному адресу
-// Если нужно, чтобы письма всё время уходили на ваш адрес — замените первую переменную $email на свой адрес электронной почты
-$send = 'vikimiki_93@mail.ru'($email, $header, $mes, "Content-type:text/plain; charset = UTF-8\r\nFrom:$email");
-// Если отправка прошла успешно — так и пишем
-if ($send == 'true') {echo "Сообщение отправлено";}
-// Если письмо не ушло — выводим сообщение об ошибке
-else {echo "Ой, что-то пошло не так";}
+    // Отправка данных на почту:
+    $success = mail("vikimiki_93@mail.ru", $subject, $message, $headers);
+
+    // Сохранение инфо о лидах в файл leads.xls :
+
+    $date=date("d.m.y"); // число.месяц.год  
+    $time=date("H:i"); // часы:минуты:секунды
+
+    $f = fopen("leads.xls", "a+");
+    fwrite($f," <tr>");    
+    fwrite($f," <td>$email</td> <td>$name</td> <td>$tel</td>");   
+    fwrite($f," <td>$source</td>");    
+    fwrite($f," </tr>");  
+    fwrite($f,"\n ");    
+    fclose($f);
 ?>
